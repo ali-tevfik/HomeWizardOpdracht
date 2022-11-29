@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true"> <!-- Appliance Setup -->
+        <domain includeSubdomains="true">energysocket-033ECA.local</domain> </domain-config>
+<domain-config cleartextTrafficPermitted="true"> <!-- Appliance Setup -->
+    <domain includeSubdomains="true">energysocket-031860.local</domain> </domain-config>
+</network-security-config>

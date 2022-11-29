@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="5dp"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/id_of_product"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:gravity="center"
+            android:text="Energy Socket"/>
+        <Switch
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/power_btn"
+            android:layout_marginRight="45dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Power" />
+
+        <Switch
+            android:layout_marginRight="45dp"
+            android:layout_marginLeft="2dp"
+            android:id="@+id/switch_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Switch" />
+
+        <com.google.android.material.slider.Slider
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/brightness_btn"
+            android:layout_marginRight="45dp"
+            android:stepSize="1"
+            android:valueFrom="0"
+            android:valueTo="255"
+            />
+
+
+</LinearLayout>
