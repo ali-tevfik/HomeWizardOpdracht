@@ -11,6 +11,9 @@ import com.example.homewizard.Adapter.ModelStateAdapter
 import com.example.homewizard.Model.ModelState
 import com.example.homewizard.R
 import com.example.homewizard.Service.StateApi
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.state_one_item.*
 import kotlinx.coroutines.*
@@ -18,17 +21,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), ModelStateAdapter.Listener {
 
-    lateinit var power : Switch
-    lateinit var switch : Switch
-
     private var  modelStates : ArrayList<ModelState>?= null
-    private var  modelState : ModelState?= null
     private var recyclerStateViewAdapter : ModelStateAdapter? = null
     var i : Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -44,23 +45,29 @@ class MainActivity : AppCompatActivity(), ModelStateAdapter.Listener {
         modelStates = ArrayList<ModelState>()
         val id1 : String = this.getString(R.string.id1)
         val id2 : String = this.getString(R.string.id2)
-        //run blocking coroutine
 
-            CoroutineScope(Dispatchers.IO).launch {
-                while (i == 0){
-                        loadState(id1)
-                        loadState(id2)
-                        delay(5000)
-                    }
+        val retrofit1 = Retrofit.Builder().baseUrl(id1)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val retrofit2 = Retrofit.Builder().baseUrl(id2)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            while (i == 0) {
+                var first = async { loadState(id1, retrofit1) }
+                first.await()
+                var second = async { loadState(id2, retrofit2) }
+                second.await()
+                delay(5000)
             }
+        }
     }
 
 
-    private fun loadState (id : String)
+    private fun loadState (id : String, retrofit: Retrofit)
     {
-        val retrofit = Retrofit.Builder().baseUrl(id)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+
         val serviceState = retrofit.create(StateApi::class.java)
         val callState = serviceState.getState()
         callState.enqueue(object  : Callback<ModelState>{
@@ -68,23 +75,31 @@ class MainActivity : AppCompatActivity(), ModelStateAdapter.Listener {
                 if (response.isSuccessful){
                     response.body()!!.let {
                         it.url = id
-                        modelState = it
-                        println("Succes State")
                         if (modelStates!!.size == 2)
-                        modelStates!!.clear()
-                        modelStates!!.add(modelState!!)
-                        modelStates.let {
-                            recyclerStateViewAdapter = ModelStateAdapter(modelStates!!, this@MainActivity)
-                            recyclerView.adapter = recyclerStateViewAdapter
+                        {
+                            var i : Int = 0
+                            for (modelstate in modelStates!!){
+                                if (modelstate.url == it.url)
+                                    modelStates!!.set(i, it)
+                                i++
+                            }
+                            recyclerStateViewAdapter!!.notifyDataSetChanged()
                         }
-
+                        else {
+                            modelStates!!.add(it!!)
+                            modelStates.let {
+                                recyclerStateViewAdapter =
+                                    ModelStateAdapter(modelStates!!, this@MainActivity)
+                                recyclerView.adapter = recyclerStateViewAdapter
+                            }
+                        }
                     }
                 }
             }
 
             override fun onFailure(call: Call<ModelState>, t: Throwable) {
 
-                Toast.makeText(this@MainActivity, "error retrofit.. Wait 3 seconden", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "error retrofit..", Toast.LENGTH_SHORT).show()
 
             }
         })
@@ -97,7 +112,7 @@ class MainActivity : AppCompatActivity(), ModelStateAdapter.Listener {
 
     override fun onItemClick(modelState: ModelState) {
 //        Toast.makeText(this,"click ${this.modelState!!.url}", Toast.LENGTH_LONG).show()
-            var intent = Intent(this,EnergySocketDetails::class.java)
+        var intent = Intent(this,EnergySocketDetails::class.java)
         i = 1;
         intent.putExtra("ID",modelState.url)
         startActivity(intent)

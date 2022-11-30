@@ -1,15 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".View.EnergySocketDetails">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewData"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/id_of_productData"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Energy Socket"/>
+
+
+
+    <TextView
+
+        android:id="@+id/wifi_ssidId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="wifi_ssid" />
+
+    <TextView
+        android:id="@+id/total_power_export_t1_kwhid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="total_power_export_t1_kwh" />
+
+    <TextView
+        android:id="@+id/total_power_import_t1_kwhId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="total_power_import_t1_kwh" />
+
+    <TextView
+        android:id="@+id/wifi_strengthId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="wifi_strength" />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/active_power_wId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="active_power_w" />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/active_power_l1_wId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="active_power_l1_w" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/total_priceId"
+        android:layout_height="wrap_content"
+        android:text="Total price"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="€"/>
+    <EditText
+        android:id="@+id/price_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="15dp"
+        android:layout_marginTop="10dp"
+        android:inputType="numberDecimal" />
+    </LinearLayout>
+        <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="10dp"
+        android:onClick="money_saveBtn"
+        />
+
+</LinearLayout>

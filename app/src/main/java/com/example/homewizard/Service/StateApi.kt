@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
 
+//Api Con
 interface StateApi {
     @GET("api/v1/state")
     fun getState(): Call<ModelState>

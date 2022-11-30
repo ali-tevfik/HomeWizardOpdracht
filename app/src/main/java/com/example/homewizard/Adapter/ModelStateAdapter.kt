@@ -9,6 +9,7 @@ import com.example.homewizard.Model.ModelState
 import com.example.homewizard.R
 import com.example.homewizard.Service.StateApi
 import com.google.android.material.slider.Slider
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.state_one_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ModelStateAdapter(private val modelStateStateList : List<ModelState>, private val listener : Listener) : RecyclerView.Adapter<ModelStateAdapter.RowHolder>() {
@@ -31,26 +33,27 @@ class ModelStateAdapter(private val modelStateStateList : List<ModelState>, priv
     class RowHolder(view : View) : RecyclerView.ViewHolder(view){
         fun bind(modelState : ModelState, position: Int, listener: Listener)
         {
-
-
+            val retrofit = Retrofit.Builder().baseUrl(modelState.url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            //fill data
             itemView.brightness_btn.value = modelState.brightness.toFloat()
             itemView.power_btn.isChecked = modelState.power_on
-            itemView.switch_btn.isChecked = modelState.power_on
+            itemView.switch_btn.isChecked = modelState.switch_lock
 
+            //check if switch open, you cannot close socket
             if (itemView.switch_btn.isChecked && itemView.power_btn.isChecked)
                 itemView.power_btn.isEnabled = false
             if (!itemView.switch_btn.isChecked)
                 itemView.power_btn.isEnabled = true
 
+            //brightness change value
             itemView.brightness_btn.addOnSliderTouchListener(object : Slider.OnSliderTouchListener{
-                override fun onStartTrackingTouch(slider: Slider) {
-
-                }
-
+                override fun onStartTrackingTouch(slider: Slider) {}
                 override fun onStopTrackingTouch(slider: Slider) {
                     if (modelState.brightness != slider.value.toInt()){
                         modelState.brightness = slider.value.toInt()
-                        setData(modelState)
+                        setData(modelState,retrofit)
                     }
                 }
             })
@@ -58,7 +61,7 @@ class ModelStateAdapter(private val modelStateStateList : List<ModelState>, priv
                 listener.onItemClick(modelState)
             }
 
-
+            //listener switch button
             itemView.switch_btn.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked){
                     itemView.switch_btn.isChecked = true
@@ -73,10 +76,12 @@ class ModelStateAdapter(private val modelStateStateList : List<ModelState>, priv
                     itemView.power_btn.isEnabled = true
                 }
                 CoroutineScope(Dispatchers.IO).launch{
-                    setData(modelState)
+                    setData(modelState, retrofit)
+                    delay(2000);
                 }
             }
 
+            //listener power button
             itemView.power_btn.setOnCheckedChangeListener { buttonView, isChecked ->
                 if(isChecked){
                     itemView.power_btn.isChecked = true
@@ -89,37 +94,26 @@ class ModelStateAdapter(private val modelStateStateList : List<ModelState>, priv
                     modelState.power_on = false
                 }
                 CoroutineScope(Dispatchers.IO).launch {
-                    setData(modelState)
+                    setData(modelState, retrofit)
+                    delay(2000)
                 }
             }
             
         }
-        private  fun setData(modelState : ModelState)
-         {
 
-            val retrofit = Retrofit.Builder().baseUrl(modelState.url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+        //Push data with retrofit
+        private  fun setData(modelState : ModelState, retrofit : Retrofit)
+         {
             val service = retrofit.create(StateApi::class.java)
             val push = service.setState(modelState)
             push.enqueue(object : Callback<ModelState> {
-                override fun onResponse(call: Call<ModelState>, response: Response<ModelState>) {
-                    println("response")
-                    if (response.isSuccessful)
-                    {
-                        Toast.makeText(itemView.context, "Succes!",Toast.LENGTH_SHORT).show()
-                    }
-
-                }
-
+                override fun onResponse(call: Call<ModelState>, response: Response<ModelState>) {}
                 override fun onFailure(call: Call<ModelState>, t: Throwable) {
-                    Toast.makeText(itemView.context, "Error.. 5 second later one more time try..", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(itemView.context, "Error SetState", Toast.LENGTH_SHORT).show()
                 }
-
             })
         }
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RowHolder {
     val view = LayoutInflater.from(parent.context).inflate(R.layout.state_one_item, parent, false )

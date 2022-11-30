@@ -1,5 +1,6 @@
 package com.example.homewizard.Model
 
+//initialized v1/data
 data class ModelData(
     var wifi_ssid : String,
     var wifi_strength : Int,
