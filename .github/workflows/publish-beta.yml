@@ -27,7 +27,7 @@ jobs:
         run: mv ${{ steps.fetch_credential_file.outputs.filePath }} ${{ github.workspace }}
 
       - name: Build and distribute beta version
-        run: ./gradlew assembleRelease  --stacktrace --info -PversionCode=${{ github.run_number }}
+        run: ./gradlew assembleRelease appDistributionUploadRelease  --stacktrace --info -PversionCode=${{ github.run_number }}
         env:
           GRADLE_GITHUB_USER: ${{ secrets.GITHUB_ACTOR }}
           GRADLE_GITHUB_TOKEN: ${{ secrets.GRADLE_TOKEN }}
