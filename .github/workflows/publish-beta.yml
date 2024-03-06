@@ -9,6 +9,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
+      - name: Use Gradle Wrapper
+        run: chmod +x gradlew
+
       - run: echo "Validating the gradle-wrapper"
       - name: Gradle Wrapper validation
         uses: gradle/wrapper-validation-action@v1.0.4
