@@ -17,7 +17,7 @@ jobs:
         id: fetch_credential_file
         uses: timheuer/base64-to-file@v1
         with:
-          encodedString: ${{ secrets.FIREBASE }}
+          encodedString: ${{ secrets.FIRABASE }}
           fileName: 'firebase-service-account.json'
 
       - name: Move file to repository
