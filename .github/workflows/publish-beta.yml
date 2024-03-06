@@ -1,0 +1,32 @@
+name: Firebase Beta distribution
+on: [workflow_dispatch]
+jobs:
+  Build-And-Publish:
+    name: Firebase/Beta
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "💡 Building ${{ github.repository }} 's ${{ github.ref }} branch"
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - run: echo "Validating the gradle-wrapper"
+      - name: Gradle Wrapper validation
+        uses: gradle/wrapper-validation-action@v1.0.4
+
+      - name: Prepare Firebase environment
+        id: fetch_credential_file
+        uses: timheuer/base64-to-file@v1
+        with:
+          encodedString: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          fileName: 'firebase-service-account.json'
+
+      - name: Move file to repository
+        run: mv ${{ steps.fetch_credential_file.outputs.filePath }} ${{ github.workspace }}
+
+      - name: Build and distribute beta version
+        run: ./gradlew assembleBeta appDistributionUploadBeta --stacktrace --info -PversionCode=${{ github.run_number }}
+        env:
+          GRADLE_GITHUB_USER: ${{ secrets.GITHUB_ACTOR }}
+          GRADLE_GITHUB_TOKEN: ${{ secrets.GRADLE_TOKEN }}
+
+      - run: echo "🍏 Finished job with status ${{ job.status }}."
