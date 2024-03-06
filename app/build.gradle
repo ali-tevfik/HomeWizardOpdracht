@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     //oto id
     id 'kotlin-android-extensions'
+    id 'com.google.firebase.appdistribution'
 }
 
 android {
