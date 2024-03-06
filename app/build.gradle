@@ -21,6 +21,7 @@ android {
     signingConfigs{
            release {
             firebaseAppDistribution {
+                appId = "com.example.homewizard"
                 serviceCredentialsFile =  "$projectDir/../firebase-service-account.json"
             }
                keyAlias 'example'
