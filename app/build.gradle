@@ -23,10 +23,10 @@ android {
             firebaseAppDistribution {
                 serviceCredentialsFile =  "$projectDir/../firebase-service-account.json"
             }
-               keyAlias 'androiddebugkey'
-            keyPassword 'android'
+               keyAlias 'example'
+            keyPassword '000000'
             storeFile file('debug.keystore')
-            storePassword 'android'
+            storePassword '000000'
     }
     }
 
