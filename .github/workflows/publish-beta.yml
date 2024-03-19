@@ -1,35 +1,27 @@
 name: Firebase Beta distribution
 on: [workflow_dispatch]
-jobs:
-  Build-And-Publish:
-    name: Firebase/Beta
-    runs-on: ubuntu-latest
+jobs:   #here we specify the jobs - We could have multiple jobs
+  build:  #name it something meaningful 
+    runs-on: macos-latest   #runner: select a machine to use
+
+    //put down the steps
     steps:
-      - run: echo "💡 Building ${{ github.repository }} 's ${{ github.ref }} branch"
-      - name: Check out repository code
-        uses: actions/checkout@v2
-
-      - name: Use Gradle Wrapper
-        run: chmod +x gradlew
-
-      - run: echo "Validating the gradle-wrapper"
-      - name: Gradle Wrapper validation
-        uses: gradle/wrapper-validation-action@v1.0.4
-
-      - name: Prepare Firebase environment
-        id: fetch_credential_file
-        uses: timheuer/base64-to-file@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
         with:
-          encodedString: ${{ secrets.FIRABASE }}
-          fileName: 'firebase-service-account.json'
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
 
-      - name: Move file to repository
-        run: mv ${{ steps.fetch_credential_file.outputs.filePath }} ${{ github.workspace }}
+      - name: Install dependencies
+        run: flutter pub get # action
 
-      - name: Build and distribute beta version
-        run: ./gradlew assembleRelease appDistributionUploadRelease  --stacktrace --info -PversionCode=${{ github.run_number }}
-        env:
-          GRADLE_GITHUB_USER: ${{ secrets.GITHUB_ACTOR }}
-          GRADLE_GITHUB_TOKEN: ${{ secrets.GRADLE_TOKEN }}
+      - name: Run tests
+        run: flutter test
 
-      - run: echo "🍏 Finished job with status ${{ job.status }}."
+      - name: Build android apk and appBundle
+        run: flutter build apk
+
+      - name: Build android ios
+        run: flutter build ios --releasee --no-codesign
