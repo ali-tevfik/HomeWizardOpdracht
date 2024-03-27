@@ -6,11 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "💡 Building ${{ github.repository }} 's ${{ github.ref }} branch"
+      - run: pwd | ls
       - name: Check out repository code
         uses: actions/checkout@v2
 
+      - run: pwd | ls
+
       - name: Use Gradle Wrapper
         run: chmod +x gradlew
+
+      - run: pwd | ls
 
       - run: echo "Validating the gradle-wrapper"
       - name: Gradle Wrapper validation
